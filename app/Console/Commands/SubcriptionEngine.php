@@ -39,8 +39,7 @@ class SubcriptionEngine extends Command
     public function handle()
     {
         Redis::psubscribe(['*'], function ($message, $channel) {
-            echo $message;
+            print_r($channel);
         });
-        //return 0;
     }
 }
