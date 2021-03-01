@@ -4,13 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
+
 
 class PubSubController extends Controller
 {
+
+    public function subscribe(Request $request, $topic)
+    {
+     
+      
+    }
+     
+
     public function publish(Request $request, $topic)
     {
-        Redis::publish($request->getContent(), $topic);
+      
 
         $message = 'Message published';
         $result = $this->formatSuccessResponse($message, $request->getContent());

@@ -20,6 +20,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
+Route::post(
+    '/subscribe/{TOPIC}',
+    [PubSubController::class, 'subscribe']
+);
+
 
 Route::post(
     '/publish/{TOPIC}',
