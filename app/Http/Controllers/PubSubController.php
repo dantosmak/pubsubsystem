@@ -35,7 +35,9 @@ use Illuminate\Support\Facades\DB;
 class PubSubController extends Controller
 {
     /**
-     * Subcribe to a 
+     * Create subscription to events
+     *
+     * @return JSON
      */
     public function subscribe(Request $request, $topic)
     {
@@ -71,7 +73,12 @@ class PubSubController extends Controller
             return $result;
         }
     }
-     
+    
+    /**
+     * Publises events to all suscribers
+     *
+     * @return JSON
+     */
     public function publish(Request $request, $topic)
     {
         try {
@@ -92,27 +99,41 @@ class PubSubController extends Controller
         }
     }
 
+    /**
+     * Fetches all looged data to verify the whole process
+     *
+     * @return JSON
+     */
     public function event(Request $request)
     {
         $queryparam = $request->query('url');
         if ($queryparam) {
-            $publishEvent = Subscriber::with('topic:id,name')->where('url', $queryparam)->select('id', 'topic_id', 'url')->get();
+            $publishEvent = Subscriber::with('topic:id,name')->where('url', $queryparam)
+                                        ->select('id', 'topic_id', 'url')->get();
             $message = 'Success';
             $result = $this->formatSuccessResponse($message, $publishEvent);
             return $result;
         } else {
-            $publishEvent = Subscriber::with('topic:id,name')->where('url', "http://localhost:8000/event")->select('id', 'topic_id', 'url')->get();
+            $publishEvent = Subscriber::with('topic:id,name')->where('url', "http://localhost:8000/event")
+                                        ->select('id', 'topic_id', 'url')->get();
             $message = 'Success';
             $result = $this->formatSuccessResponse($message, $publishEvent);
             return $result;
         }
     }
 
+    /**
+     * Formats success responses from
+     * various functions
+     */
     public function formatSuccessResponse($message, $data)
     {
         return response()->json(['status' => true, 'message' => $message, 'data' => $data], 200);
     }
 
+    /**
+     * Formats error response
+     */
     public function formatErrorResponse($th)
     {
         return response()->json(['status' => false, 'error' => $th], 403);
