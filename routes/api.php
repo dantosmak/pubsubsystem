@@ -30,3 +30,8 @@ Route::post(
     '/publish/{TOPIC}',
     [PubSubController::class, 'publish']
 );
+
+Route::get(
+    '/event',
+    [PubSubController::class, 'event']
+);
