@@ -83,6 +83,7 @@ class PubSubController extends Controller
     public function publish(Request $request, $topic)
     {
         try {
+            if(Topic::where('name', $topic)->exists()){
             DB::beginTransaction();
             $event             = new PublishedEvent;
             $event->topic_id   = Topic::where('name', $topic)->first()->id;
@@ -90,6 +91,10 @@ class PubSubController extends Controller
             $event->save();
 
             DB::commit();
+            }else{
+                $result = $this->formatErrorResponse("you are not subscribed to this channel");
+                return $result;
+            }
 
             if (Subscriber::where('topic_id', $event->topic_id)->exists()) {
                 event(new SendMessage($topic, $request->getContent()));
