@@ -91,12 +91,10 @@ class PubSubController extends Controller
 
             DB::commit();
 
-
             if (Subscriber::where('topic_id', $event->topic_id)->exists()) {
                 event(new SendMessage($topic, $event->data));
             }
           
-        
             $message = 'Message published';
             $result = $this->formatSuccessResponse($message, $request->getContent());
             return $result;
