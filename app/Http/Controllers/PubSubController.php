@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use App\Models\Subscriber;
 use App\Models\Topic;
 use App\Models\PublishedEvent;
+use App\Events\SendMessage;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -36,7 +37,7 @@ class PubSubController extends Controller
 {
     /**
      * Create subscription to events
-     *
+     * @param request $request HTTP request
      * @return JSON
      */
     public function subscribe(Request $request, $topic)
@@ -76,7 +77,7 @@ class PubSubController extends Controller
     
     /**
      * Publises events to all suscribers
-     *
+     * @param request $request HTTP request
      * @return JSON
      */
     public function publish(Request $request, $topic)
@@ -89,6 +90,13 @@ class PubSubController extends Controller
             $event->save();
 
             DB::commit();
+
+
+            if (Subscriber::where('topic_id', $event->topic_id)->exists()) {
+                event(new SendMessage($topic, $event->data));
+            }
+          
+        
             $message = 'Message published';
             $result = $this->formatSuccessResponse($message, $request->getContent());
             return $result;
@@ -101,7 +109,7 @@ class PubSubController extends Controller
 
     /**
      * Fetches all looged data to verify the whole process
-     *
+     * @param request $request HTTP request
      * @return JSON
      */
     public function event(Request $request)
