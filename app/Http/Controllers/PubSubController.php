@@ -46,18 +46,18 @@ class PubSubController extends Controller
             DB::beginTransaction();
 
             if (Topic::where('name', $topic)->exists()) {
-                $subscribe = new Subscriber;
-                $subscribe->topic_id = Topic::where('name', $topic)->first()->id;
-                $subscribe->url = json_decode($request->getContent())->url;
+                $subscribe              = new Subscriber;
+                $subscribe->topic_id    = Topic::where('name', $topic)->first()->id;
+                $subscribe->url         = json_decode($request->getContent())->url;
                 $subscribe->save();
             } else {
                 $subTopic = new Topic;
                 $subTopic->name = $topic;
                 $subTopic->save();
     
-                $subscribe = new Subscriber;
-                $subscribe->topic_id = $subTopic->id;
-                $subscribe->url = json_decode($request->getContent())->url;
+                $subscribe              = new Subscriber;
+                $subscribe->topic_id    = $subTopic->id;
+                $subscribe->url         = json_decode($request->getContent())->url;
                 $subscribe->save();
             }
             DB::commit();
@@ -84,15 +84,15 @@ class PubSubController extends Controller
     {
         try {
             DB::beginTransaction();
-            $event = new PublishedEvent;
-            $event->topic_id = Topic::where('name', $topic)->first()->id;
-            $event->data = $request->getContent();
+            $event             = new PublishedEvent;
+            $event->topic_id   = Topic::where('name', $topic)->first()->id;
+            $event->data       = $request->getContent();
             $event->save();
 
             DB::commit();
 
             if (Subscriber::where('topic_id', $event->topic_id)->exists()) {
-                event(new SendMessage($topic, $event->data));
+                event(new SendMessage($topic, $request->getContent()));
             }
           
             $message = 'Message published';
