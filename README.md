@@ -18,7 +18,8 @@ setup the enronment variable using .env.example
 Generate application key php artisan key:generate
 Run migrations php artisan migrate
 
-Start the server
+Start the server: php artisan serve
+Start the websocket engine using php artisan websockets:serve
 
 +++++++++++++++++++++++ SUBCRIPTION
 -POST /api/subscribe/{TOPIC}
